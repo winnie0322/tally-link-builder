@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<title>교육별 Tally 링크 생성기</title>
+<style>
+:root{font-family: 'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#14253b;background:#f5f7fb}*{box-sizing:border-box}body{margin:0;padding:32px 18px}main{max-width:790px;margin:0 auto}.eyebrow{font-size:13px;font-weight:750;letter-spacing:.09em;color:#3472d9}h1{font-size:clamp(27px,5vw,36px);letter-spacing:-1.1px;margin:8px 0 8px}p{line-height:1.65}.lead{color:#52637b;margin:0 0 24px}.card{background:white;border:1px solid #e4eaf2;border-radius:20px;box-shadow:0 8px 34px rgba(22,43,74,.045);padding:26px;margin-bottom:18px}h2{font-size:18px;margin:0 0 19px;letter-spacing:-.3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.field{margin-bottom:17px}label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}input,select{width:100%;border:1px solid #cbd6e6;border-radius:10px;background:white;padding:13px 12px;color:#172b43;font:inherit;font-size:15px;min-height:48px}input:focus,select:focus{outline:3px solid #dbeafe;border-color:#4c83db}.hint{font-size:12px;color:#66758a;margin:7px 0 0}.muted{color:#697b90}.result{background:#f3f7fe;border:1px solid #dae7fc;border-radius:14px;padding:18px;margin-top:20px}.result small{display:block;font-weight:700;color:#425a79;margin:0 0 7px}.id{font-weight:800;font-size:19px;overflow-wrap:anywhere}.url{font-size:14px;line-height:1.7;overflow-wrap:anywhere;color:#254f97;margin:0 0 14px}.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}button,a.action{background:#225fc4;border:1px solid #225fc4;color:white;border-radius:10px;font:inherit;font-weight:700;font-size:14px;padding:11px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}button.secondary,a.secondary{background:white;color:#225fc4;border-color:#b7cbe7}button:disabled{background:#9baecb;border-color:#9baecb;cursor:not-allowed}.status{min-height:20px;color:#127251;font-size:13px;margin-top:10px}.error{color:#b42318}.notice{font-size:13px;color:#52637b;background:#f8fafc;border-radius:10px;padding:13px 16px;line-height:1.65}.footer{font-size:12px;color:#718198;text-align:center;margin-top:22px}.pill{display:inline-block;background:#eaf2ff;color:#2860bc;font-size:12px;font-weight:750;padding:5px 10px;border-radius:99px}code{background:#eff3f8;border-radius:5px;padding:2px 5px}@media(max-width:590px){body{padding:20px 12px}.card{padding:19px}.grid{grid-template-columns:1fr}.buttons>*{flex:1}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">EDUCATION OPERATIONS TOOL</div>
+<h1>교육별 Tally 링크 생성기</h1>
+<p class="lead">등록된 기관명은 의미 있는 기업 코드가 자동 적용됩니다. 미등록 기관은 영문 약어를 직접 지정해 저장할 수 있습니다. 교육 종료일과 차수를 기준으로 제출 링크를 생성합니다.</p>
+<section class="card">
+<h2>1. 기본 설정</h2>
+<div class="field"><label for="base">Tally 기본 설문 주소</label><input id="base" type="url" value="https://tally.so/r/J19k57" placeholder="https://tally.so/r/xxxxxx" autocomplete="url"><p class="hint">숨김 필드 <code>edu_id</code>, <code>company</code>, <code>date</code>가 만들어진 Tally 폼 주소를 입력하세요.</p></div>
+<div class="grid"><div class="field"><label for="company">기업·기관명</label><input id="company" list="knownCompanies" placeholder="예: 국립순천대학교" value="국립순천대학교"><datalist id="knownCompanies"><option value="서울대학교"><option value="국립순천대학교"><option value="국립순천대"><option value="현대엘리베이터"><option value="프레인글로벌"><option value="가비아"><option value="그리드위즈"><option value="동아제약"><option value="티오케이"></datalist></div><div class="field"><label for="code">기업 코드</label><input id="code" placeholder="기업명을 입력하면 자동 생성" value="SCNU" maxlength="24"><p class="hint" id="codeHint">기업명을 입력하면 자동 생성됩니다. 필요하면 직접 수정할 수 있습니다.</p><button type="button" id="resetCode" class="secondary" style="margin-top:9px;padding:7px 10px;font-size:12px">기업 코드 자동 생성으로 되돌리기</button> <button type="button" id="saveCode" class="secondary" style="margin-top:9px;padding:7px 10px;font-size:12px">기업 코드 저장</button></div></div>
+<div class="grid"><div class="field"><label for="start">교육 시작일 (선택)</label><input id="start" type="date" value="2026-11-12"></div><div class="field"><label for="end">교육 종료일</label><input id="end" type="date" value="2026-11-13" required></div></div>
+<div class="grid"><div class="field"><label for="round">교육 차수</label><input id="round" type="number" min="1" max="999" value="1"></div><div class="field"><label for="custom">교육명 (선택)</label><input id="custom" value="" placeholder="예: 생성형 AI 활용 교육"></div></div>
+</section>
+<section class="card"><h2>2. 자동 생성 결과 <span class="pill">즉시 생성</span></h2>
+<div class="result"><small>교육 고유 ID</small><div id="eduId" class="id">SCNU-20261113-01</div><div class="buttons"><button id="copyId" class="secondary">교육 ID 복사</button></div></div>
+<div class="result"><small>교육생에게 공유할 Tally 링크</small><p id="url" class="url"></p><div class="buttons"><button id="copyUrl">링크 복사</button><a id="openUrl" class="action secondary" target="_blank" rel="noopener noreferrer">설문 열어보기 ↗</a></div></div>
+<div class="result">
+<h2 style="margin-bottom:12px">3. 완성된 Tally 주소 짧게 만들기</h2>
+<p class="hint">위에서 생성한 주소를 자동으로 가져오거나, 다른 Tally 주소 전체를 아래 칸에 붙여넣으세요.</p>
+<div class="field" style="margin-top:15px"><label for="longUrl">줄일 원본 주소 (전체 URL)</label>
+<textarea id="longUrl" rows="4" spellcheck="false" placeholder="https://tally.so/r/J19k57?edu_id=...&company=...&date=..." style="width:100%;border:1px solid #cbd6e6;border-radius:10px;padding:13px 12px;min-height:110px;resize:vertical;overflow-wrap:anywhere;font:inherit;font-size:14px"></textarea>
+<div class="buttons"><button type="button" class="secondary" id="useGenerated">위에서 생성된 Tally 주소 가져오기</button></div>
+</div>
+<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">짧은 주소 이름 직접 지정하기 (선택)</summary>
+<div class="field" style="margin-top:12px"><label for="alias">주소 뒤에 붙일 이름</label><input id="alias" placeholder="예: scnu1113" maxlength="30" autocomplete="off"><p class="hint">비워두면 자동으로 짧은 주소가 발급됩니다. 지정할 경우 영문·숫자·밑줄(_) 5~30자입니다.</p></div>
+</details>
+<div class="buttons"><button type="button" id="shorten">입력한 주소 줄이기</button><button type="button" id="autoShorten" class="secondary">이름 없이 자동 발급</button></div>
+<div id="shortResult" style="display:none;margin-top:15px"><small>발급된 짧은 주소</small><p class="id" id="shortUrl" style="overflow-wrap:anywhere"></p><div class="buttons"><button type="button" id="copyShort">짧은 주소 복사</button><a id="openShort" class="action secondary" target="_blank" rel="noopener noreferrer">짧은 주소 열기 ↗</a></div></div>
+<p class="status" id="shortStatus" role="status" aria-live="polite"></p>
+<a id="manualShort" href="https://is.gd/" target="_blank" rel="noopener noreferrer">단축 서비스에서 직접 만들기 ↗</a>
+<p class="hint">발급 요청 시 입력한 원본 주소가 외부 is.gd 서비스에 전송됩니다. 기업 보안 규정을 확인하세요. 발급된 주소가 실제 설문으로 이동하는지 테스트해 주세요.</p>
+</div>
+<p class="status" id="status" role="status" aria-live="polite"></p>
+<p class="notice">💡 <b>교육생이 주소를 직접 입력한다면</b> 위에서 <code>scnu1113</code> 같은 별칭을 입력하고 짧은 주소를 발급하세요. 외부 단축 서비스 연결이 차단되면 수동 생성 링크를 이용할 수 있습니다.</p>
+<p class="notice">🔎 <b>확인 방법:</b> 실제 링크로 테스트 제출한 후 Tally 응답에서 <code>edu_id</code>, <code>company</code>, <code>date</code> 값이 기록되는지 확인하세요. 같은 양식이므로 교육별 데이터는 고유 ID로 구분합니다. 미등록 기관의 코드는 직접 지정해야 하며, 저장된 사용자 정의 코드는 현재 브라우저에만 보관됩니다. 운영자 간 공유는 되지 않습니다.</p>
+</section>
+<div class="footer">이 도구는 Tally와 별도로 동작하는 링크 생성기입니다. 링크 생성 정보는 브라우저에서 처리되며, 단축 주소 발급 버튼을 누른 경우에만 완성된 원본 URL이 외부 is.gd 서비스로 전달됩니다.</div>
+</main>
+<script>
+const knownCodes = new Map([
+ ['서울대학교','SNU'],['서울대','SNU'],['Seoul National University','SNU'],
+ ['국립순천대학교','SCNU'],['국립순천대','SCNU'],['순천대학교','SCNU'],
+ ['현대엘리베이터','HDEL'],['프레인글로벌','PRN'],['가비아','GAB'],
+ ['그리드위즈','GRID'],['동아제약','DONGA'],['티오케이','TOK']
+]);
+let manualCode=false;
+function normalizedName(name){return name.trim().replace(/[\s()（）·._-]/g,'').toLowerCase();}
+function savedCodes(){try{return JSON.parse(localStorage.getItem('tally_company_codes')||'{}');}catch(e){return {};}}
+function codeFromName(name){
+ const n=name.trim().replace(/\s+/g,' ');
+ if(!n)return '';
+ const normalized=normalizedName(n);
+ for(const [key,val] of knownCodes){if(normalizedName(key)===normalized)return val;}
+ const saved=savedCodes();if(saved[normalized])return saved[normalized];
+ // 영문 기관명은 영문 이름에서 약어 후보를 자동 생성합니다.
+ if(/^[A-Za-z0-9\s.&_-]+$/.test(n)){
+   const words=n.match(/[A-Za-z0-9]+/g)||[];
+   if(words.length===1)return words[0].slice(0,8).toUpperCase();
+   return words.map(w=>w[0]).join('').slice(0,8).toUpperCase();
+ }
+ // 공식 영문 약칭을 알 수 없는 한글 기관은 의미 없는 난수 코드를 발급하지 않습니다.
+ return '';
+}
+function saveCompanyCode(){
+ const n=els.company.value.trim(),code=els.code.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'');
+ if(!n||!code){status.textContent='기업명과 영문 코드를 입력하세요.';status.className='status error';return;}
+ const data=savedCodes();data[normalizedName(n)]=code;
+ try{localStorage.setItem('tally_company_codes',JSON.stringify(data));status.textContent='이 브라우저에 기업 코드가 저장되었습니다.';status.className='status';}catch(e){status.textContent='브라우저 설정으로 인해 저장할 수 없습니다.';status.className='status error';}
+ manualCode=false;syncCode();status.textContent='기업 코드 저장 완료 (현재 브라우저에만 적용)';
+}
+function syncCode(){
+ if(!manualCode){els.code.value=codeFromName(els.company.value);}
+ const known=[...knownCodes.keys()].some(k=>normalizedName(k)===normalizedName(els.company.value)) || !!savedCodes()[normalizedName(els.company.value)];
+ document.getElementById('codeHint').textContent=manualCode?'직접 수정 중입니다. 자동 생성으로 돌아가려면 아래 버튼을 누르세요.':known?'등록된 기관 코드가 자동 적용되었습니다.':els.company.value.trim()?(els.code.value?'자동 생성된 코드입니다. 필요하면 수정 후 저장하세요.':'등록되지 않은 기관입니다. 공식 영문 약어를 입력하고 기업 코드 저장을 누르세요.'):'기업명을 입력하면 코드가 자동 생성됩니다.';
+ update();
+}
+const ids=['base','company','code','start','end','round','custom'];const els=Object.fromEntries(ids.map(k=>[k,document.getElementById(k)]));const idEl=document.getElementById('eduId'),urlEl=document.getElementById('url'),status=document.getElementById('status'),openUrl=document.getElementById('openUrl');let output='';let currentId='';
+function update(){clearShort();status.textContent='';status.className='status';const code=els.code.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'');const date=els.end.value;const round=Number(els.round.value);const base=els.base.value.trim();if(!code||!date||!Number.isInteger(round)||round<1||round>999){idEl.textContent='설정 값을 확인해 주세요.';urlEl.textContent='';output='';openUrl.removeAttribute('href');return;}currentId=`${code}-${date.replaceAll('-','')}-${String(round).padStart(2,'0')}`;idEl.textContent=currentId;try{const u=new URL(base);if(u.protocol!=='https:'||u.hostname!=='tally.so'||!/^\/r\/[a-zA-Z0-9]+\/?$/.test(u.pathname))throw Error('Tally 링크 형식을 확인해 주세요.');u.searchParams.set('edu_id',currentId);u.searchParams.set('company',code);u.searchParams.set('date',date);output=u.toString();urlEl.textContent=output;openUrl.href=output;}catch(e){output='';urlEl.textContent='유효한 Tally 폼 주소를 입력해 주세요. (https://tally.so/r/...)';openUrl.removeAttribute('href');}}
+
+let shortLink='';
+const longUrlInput=document.getElementById('longUrl'), shortResult=document.getElementById('shortResult'), shortUrl=document.getElementById('shortUrl'), shortStatus=document.getElementById('shortStatus'), aliasInput=document.getElementById('alias'), manualShort=document.getElementById('manualShort'), shortenButton=document.getElementById('shorten'), autoShortenButton=document.getElementById('autoShorten');
+function clearShort(){shortLink='';shortResult.style.display='none';shortStatus.textContent='';shortStatus.className='status';}
+function getLongUrl(){
+ const v=longUrlInput.value.trim();
+ try{const u=new URL(v);return ['https:','http:'].includes(u.protocol)?u.toString():null;}catch(e){return null;}
+}
+function makeManualUrl(){
+ const source=getLongUrl();if(!source)return 'https://is.gd/';
+ const u=new URL('https://is.gd/create.php');u.searchParams.set('url',source);
+ const alias=aliasInput.value.trim();if(alias)u.searchParams.set('shorturl',alias);
+ return u.toString();
+}
+function refreshManual(){manualShort.href=makeManualUrl();}
+async function createShort(automatic=false){
+ clearShort();
+ const source=getLongUrl();
+ if(!source){shortStatus.textContent='줄일 원본 주소 전체를 먼저 입력해 주세요. (https://로 시작)';shortStatus.className='status error';return;}
+ const alias=automatic?'':aliasInput.value.trim();
+ if(alias&&!/^[a-zA-Z0-9_]{5,30}$/.test(alias)){shortStatus.textContent='별칭은 영문·숫자·밑줄(_) 5~30자로 입력해 주세요.';shortStatus.className='status error';return;}
+ shortenButton.disabled=true;autoShortenButton.disabled=true;shortStatus.textContent='단축 주소 발급 요청 중…';
+ const u=new URL('https://is.gd/create.php');u.searchParams.set('format','json');u.searchParams.set('url',source);
+ if(alias)u.searchParams.set('shorturl',alias);
+ try{
+  const response=await fetch(u.toString());const data=await response.json();
+  if(!response.ok||data.errorcode||!data.shorturl)throw new Error(data.errormessage||'발급 실패');
+  if(source!==getLongUrl()){shortStatus.textContent='입력 주소가 변경되었습니다. 다시 생성해 주세요.';return;}
+  shortLink=data.shorturl;shortUrl.textContent=shortLink;
+  document.getElementById('openShort').href=shortLink;shortResult.style.display='block';
+  shortStatus.textContent='발급 완료. 교육생에게 공유하기 전 직접 이동을 확인해 주세요.';
+ }catch(e){shortStatus.textContent='자동 발급 실패. 아래 수동 생성 링크를 이용해 주세요. ('+(e instanceof TypeError?'브라우저 연결 제한':e.message)+')';shortStatus.className='status error';}
+ finally{shortenButton.disabled=false;autoShortenButton.disabled=false;}
+}
+document.getElementById('useGenerated').addEventListener('click',()=>{if(!output){shortStatus.textContent='Tally 주소를 먼저 생성해 주세요.';shortStatus.className='status error';return;}longUrlInput.value=output;clearShort();refreshManual();});
+longUrlInput.addEventListener('input',()=>{clearShort();refreshManual();});
+aliasInput.addEventListener('input',refreshManual);
+document.getElementById('shorten').addEventListener('click',()=>createShort(false));
+document.getElementById('autoShorten').addEventListener('click',()=>createShort(true));
+document.getElementById('copyShort').addEventListener('click',()=>copy(shortLink));
+longUrlInput.value=output;refreshManual();
+async function copy(value){if(!value)return;try{await navigator.clipboard.writeText(value);status.textContent='복사되었습니다.';status.className='status';}catch(e){const t=document.createElement('textarea');t.value=value;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();const done=document.execCommand('copy');t.remove();status.textContent=done?'복사되었습니다.':'브라우저에서 복사가 제한되었습니다. 주소를 직접 선택해 복사해 주세요.';status.className=done?'status':'status error';}}
+ids.filter(id=>!['company','code'].includes(id)).forEach(id=>els[id].addEventListener('input',update));els.company.addEventListener('input',syncCode);els.code.addEventListener('input',()=>{manualCode=true;syncCode()});document.getElementById('saveCode').addEventListener('click',saveCompanyCode);document.getElementById('resetCode').addEventListener('click',()=>{manualCode=false;syncCode()});document.getElementById('copyId').addEventListener('click',()=>copy(currentId));document.getElementById('copyUrl').addEventListener('click',()=>copy(output));update();
+</script>
+</body></html>
